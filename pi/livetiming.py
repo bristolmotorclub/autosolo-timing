@@ -2,38 +2,36 @@
 
 import RPi.GPIO as GPIO
 import time
-#import paho.mqtt.client as mqtt #pip3 install paho-mqtt
+#import paho.mqtt.client as mqtt #pip3 install paho-mqtt (currently using JSON to web API rather than MQTT)
 
 import json # forjson.  Obvs
 
+# Camera initialisation (commented out for the future)
 #sudo apt install libatlas3-base libwebp6 libtiff5 libjasper1 libilmbase12 libopenexr22 libgstreamer1.0.0 libavcodec57 libavformat57 libavutil55 libswscale4 libqtgui4 libqt4-test libqtcore4
 #pip3 install opencv-python
-import cv2
-camera = cv2.VideoCapture(0)
-camera.set(cv2.CAP_PROP_BUFFERSIZE,1)
-if camera.isOpened:
-	print("Camera started")
-else:
-	print("Camera not working")
-cv2.startWindowThread()
-stagedpic = "stagedpic"
+#import cv2
+#camera = cv2.VideoCapture(0)
+#camera.set(cv2.CAP_PROP_BUFFERSIZE,1)
+#if camera.isOpened:
+#	print("Camera started")
+#else:
+#	print("Camera not working")
+#cv2.startWindowThread()
+#stagedpic = "stagedpic"
 #cv2.namedWindow(stagedpic)
-startpic = "startpic"
-cv2.namedWindow(startpic)
-splitpic = "splitpic"
+#startpic = "startpic"
+#cv2.namedWindow(startpic)
+#splitpic = "splitpic"
 #cv2.namedWindow(splitpic)
-finishpic = "finishpic"
-cv2.namedWindow(finishpic)
+#finishpic = "finishpic"
+#cv2.namedWindow(finishpic)
 
-# Set mode of GPIO
+# Configure GPIO mode/pins
 GPIO.setmode(GPIO.BOARD)
-#Stage = 16 #GPIO23
-#Start = 18 #GPIO24
-#Finish = 22 #GPIO25
+Stage = 16 #GPIO23
+Start = 18 #GPIO24
+Finish = 22 #GPIO25
 Split = 24 #GPIO8
-Start = 16
-Finish = 18
-Stage = 22
 GPIO.setwarnings(False)
 GPIO.setup(Stage, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(Start, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -41,17 +39,21 @@ GPIO.setup(Finish, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(Split, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # Function to send data to web service
-def sendtime(beamid,timestamp):
-	print("recording "+beamid+" at "+timestamp)
+def sendtime(beamid,thistrigger):
+	thistrigger=str(thistrigger)
+	print("API send function: recording "+beamid+" at "+thistrigger)
+
 	# Code to send stuff
-	timingdata = str({"beamid":beamid,"timestamp":timestamp})
+	timingdata = '{"beamid":"'+beamid+'","timestamp":"'+thistrigger+'"}'
 	uploaddata = json.loads(timingdata)
 	URL = 'https://path.to/API'
 	reqheaders = {'Content-Type':'application/json'}
-	request = requests.post(url=URL,json=uploaddata,headers=reqheaders)
+	#request = requests.post(url=URL,json=uploaddata,headers=reqheaders)
+
 	# Append to log ... needs datestamp as file prefix
 	with open("timinglog.log","a") as logfile:
-			logfile.write(timestamp+","+beamid+","+request.status_code)
+#			logfile.write(thistrigger+","+beamid+","+request.status_code)
+			logfile.write(thistrigger+","+beamid+",")
 
 # Staged interrupt function
 def staged(pin):
@@ -61,12 +63,14 @@ def staged(pin):
 	else: # Seems a valid trigger
 		sendtime("staged",str(time.time()))
 		print("Staged!")
-		ret, image = camera.read()
-		ret, image = camera.read()
-		if not ret:
-			print("No image returned")
-		cv2.imshow(stagedpic,image)
-		camera.release
+		
+		# Take a photo of staged car (future)
+		#ret, image = camera.read()
+		#ret, image = camera.read()
+		#if not ret:
+		#	print("No image returned")
+		#cv2.imshow(stagedpic,image)
+		#camera.release
 
 # Start interrupt function
 def started(pin):
@@ -75,14 +79,18 @@ def started(pin):
 		print("too soon!")
 	else: # Seems a valid trigger
 		starttrigger = time.time()
+		sendtime("started",str(starttrigger))
 		print("Start timestamp: " + str(starttrigger))
-		ret, image = camera.read()
-		ret, image = camera.read()
-		if not ret:
-			print("No image returned")
-		cv2.imshow(startpic,image)
-		camera.release
-		#publish to broker
+		
+		# Take a photo of starting car (future)
+		#ret, image = camera.read()
+		#ret, image = camera.read()
+		#if not ret:
+		#	print("No image returned")
+		#cv2.imshow(startpic,image)
+		#camera.release
+		
+		#publish to broker (currently using web API)
 		#client.publish("StartLine", payload=trigger, qos=0, retain=False)
 
 # Split interrupt function
@@ -91,15 +99,18 @@ def splitted(pin):
 	if time.time() - splittrigger < 1: # Probably a double-trigger
 		print("too soon!")
 	else: # Seems a valid trigger
-		splittime = time.time() - starttrigger
 		splittrigger = time.time()
+		sendtime("split",str(splittrigger))
+		splittime = splittrigger - starttrigger
 		print("Split time: " + str(round(splittime,2)) + "s")
-		ret, image = camera.read()
-		ret, image = camera.read()
-		if not ret:
-			print("No image returned")
-		cv2.imshow(splitpic,image)
-		camera.release
+
+		# Take a photo of car (future)
+		#ret, image = camera.read()
+		#ret, image = camera.read()
+		#if not ret:
+		#	print("No image returned")
+		#cv2.imshow(splitpic,image)
+		#camera.release
 
 # Finish interrupt function
 def finished(pin):
@@ -107,18 +118,23 @@ def finished(pin):
 	if time.time() - finishtrigger < 1: # Probably a double-trigger
 		print("too soon!")
 	else: # Seems a valid trigger
-		finishtime = time.time() - starttrigger
 		finishtrigger = time.time()
+		sendtime("finished",str(finishtrigger))
+
+		# Calculate elapsed time and log timestamp
+		finishtime = finishtrigger - starttrigger
+		#calculate speed based on 100mm distance between gates
 		speed = 0.1/finishtime*3.6/8*5
 		print("Finish time: " + str(round(finishtime,2)) + "s")
 		print("Speed: "+str(round(speed,2))+"mph")
-		ret, image = camera.read()
-		ret, image = camera.read()
-		if not ret:
-			print("No image returned")
-		cv2.imshow(finishpic,image)
-		cv2.imwrite("images/"+str(round(time.time(),0))+".jpg",image)
-		camera.release
+
+		# Take a photo of car (future)
+		#ret, image = camera.read()
+		#if not ret:
+		#	print("No image returned")
+		#cv2.imshow(finishpic,image)
+		#cv2.imwrite("images/"+str(round(time.time(),0))+".jpg",image)
+		#camera.release
 
 # Initialise trigger timestamp
 stagetrigger = time.time()
@@ -144,7 +160,10 @@ print("Ready for signal")
 
 # Loop forever
 while True:
+	#Loop forever waiting for interrupt
 	#time.sleep(1e6)
+
+	# Test each trigger in turn
 	time.sleep(2)
 	print("pretending to stage")
 	staged(0)
