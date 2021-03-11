@@ -6,7 +6,7 @@ build.sh installs the script to run at boot
 ## livetiming.py
 Uses interrupts on several pins to trigger a function for that pin's determined location.  Four pins are defined at the start of the script for the following timing beams:
 
-*Staged (ready to start)
+* Staged (ready to start)
 * Start
 * Split
 * Finish

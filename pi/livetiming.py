@@ -4,6 +4,8 @@ import RPi.GPIO as GPIO
 import time
 #import paho.mqtt.client as mqtt #pip3 install paho-mqtt
 
+import json # forjson.  Obvs
+
 #sudo apt install libatlas3-base libwebp6 libtiff5 libjasper1 libilmbase12 libopenexr22 libgstreamer1.0.0 libavcodec57 libavformat57 libavutil55 libswscale4 libqtgui4 libqt4-test libqtcore4
 #pip3 install opencv-python
 import cv2
@@ -40,10 +42,16 @@ GPIO.setup(Split, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # Function to send data to web service
 def sendtime(beamid,timestamp):
+	print("recording "+beamid+" at "+timestamp)
 	# Code to send stuff
+	timingdata = str({"beamid":beamid,"timestamp":timestamp})
+	uploaddata = json.loads(timingdata)
+	URL = 'https://path.to/API'
+	reqheaders = {'Content-Type':'application/json'}
+	request = requests.post(url=URL,json=uploaddata,headers=reqheaders)
 	# Append to log ... needs datestamp as file prefix
 	with open("timinglog.log","a") as logfile:
-			logfile.write(timestamp+","+beamid)
+			logfile.write(timestamp+","+beamid+","+request.status_code)
 
 # Staged interrupt function
 def staged(pin):
@@ -51,6 +59,7 @@ def staged(pin):
 	if time.time() - stagetrigger < 1: # Probably a double-trigger
 		print("too soon!")
 	else: # Seems a valid trigger
+		sendtime("staged",str(time.time()))
 		print("Staged!")
 		ret, image = camera.read()
 		ret, image = camera.read()
@@ -135,4 +144,18 @@ print("Ready for signal")
 
 # Loop forever
 while True:
-	time.sleep(1e6)
+	#time.sleep(1e6)
+	time.sleep(2)
+	print("pretending to stage")
+	staged(0)
+	time.sleep(2)
+	print("pretending to start")
+	started(0)
+	time.sleep(2)
+	print("pretending to split")
+	splitted(0)
+	time.sleep(2)
+	print("pretending to finish")
+	finished(0)
+	time.sleep(2)
+	
