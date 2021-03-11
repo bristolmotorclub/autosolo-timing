@@ -1,6 +1,8 @@
 # autosolo-timing
 A timing display system for AutoSolo events to show the current class and overall standings on static Raspbarry Pi screens and mobile web browsers.  The intention is to use a Raspberry Pi as a WiFi access point, web server and MySQL database.  Times will be stored in the database, edited directly with LibreOffice.  The web server will present the current times in a tablular format, ordered by class or overall and either to fit a screen resolution directly with no scrolling or for a mobile device.
 
+Main app is at https://github.com/mabware
+
 ## Future Enhancements
 
 Some thinking for the future...
