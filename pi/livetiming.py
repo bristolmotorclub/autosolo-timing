@@ -5,26 +5,10 @@ import time
 #import paho.mqtt.client as mqtt #pip3 install paho-mqtt (currently using JSON to web API rather than MQTT)
 
 import json # forjson.  Obvs
+import requests # for posting data to API
 
-# Camera initialisation (commented out for the future)
-#sudo apt install libatlas3-base libwebp6 libtiff5 libjasper1 libilmbase12 libopenexr22 libgstreamer1.0.0 libavcodec57 libavformat57 libavutil55 libswscale4 libqtgui4 libqt4-test libqtcore4
-#pip3 install opencv-python
-#import cv2
-#camera = cv2.VideoCapture(0)
-#camera.set(cv2.CAP_PROP_BUFFERSIZE,1)
-#if camera.isOpened:
-#	print("Camera started")
-#else:
-#	print("Camera not working")
-#cv2.startWindowThread()
-#stagedpic = "stagedpic"
-#cv2.namedWindow(stagedpic)
-#startpic = "startpic"
-#cv2.namedWindow(startpic)
-#splitpic = "splitpic"
-#cv2.namedWindow(splitpic)
-#finishpic = "finishpic"
-#cv2.namedWindow(finishpic)
+# Set base URL for API
+baseURL = 'http://path.to/API'
 
 # Configure GPIO mode/pins
 GPIO.setmode(GPIO.BOARD)
@@ -38,22 +22,65 @@ GPIO.setup(Start, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(Finish, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(Split, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+# Function to initialise camera
+def initcam():
+	print("Initialising camera...")
+	# Camera initialisation (commented out for the future)
+	#sudo apt install libatlas3-base libwebp6 libtiff5 libjasper1 libilmbase12 libopenexr22 libgstreamer1.0.0 libavcodec57 libavformat57 libavutil55 libswscale4 libqtgui4 libqt4-test libqtcore4
+	#pip3 install opencv-python
+	#import cv2
+	#camera = cv2.VideoCapture(0)
+	#camera.set(cv2.CAP_PROP_BUFFERSIZE,1)
+	#if camera.isOpened:
+	#	print("Camera started")
+	#else:
+	#	print("Camera not working")
+	#cv2.startWindowThread()
+	#stagedpic = "stagedpic"
+	#cv2.namedWindow(stagedpic)
+	#startpic = "startpic"
+	#cv2.namedWindow(startpic)
+	#splitpic = "splitpic"
+	#cv2.namedWindow(splitpic)
+	#finishpic = "finishpic"
+	#cv2.namedWindow(finishpic)
+
+# Function to take a photo
+def takephoto(beamid):
+	print("Taking photo at "+beamid)
+	#ret, image = camera.read()
+	#ret, image = camera.read()
+	#if not ret:
+	#	print("No image returned")
+	#cv2.imshow(beamid,image)
+	#cv2.imwrite("images/"+beamid+str(round(time.time(),0))+".jpg",image)
+	#camera.release
+
+
 # Function to send data to web service
 def sendtime(beamid,thistrigger):
+	thistrigger=round(thistrigger*1000)
 	thistrigger=str(thistrigger)
+	webstatus = "69"
 	print("API send function: recording "+beamid+" at "+thistrigger)
 
 	# Code to send stuff
-	timingdata = '{"beamid":"'+beamid+'","timestamp":"'+thistrigger+'"}'
-	uploaddata = json.loads(timingdata)
-	URL = 'https://path.to/API'
-	reqheaders = {'Content-Type':'application/json'}
-	#request = requests.post(url=URL,json=uploaddata,headers=reqheaders)
+	URL=""
+	if beamid == "started":
+		timestampjson = '{"startTime":'+thistrigger+'}'
+		URL = baseURL+'/start'
+	if beamid == "finished":
+		timestampjson = '{"finishTime":'+thistrigger+'}'
+		URL = baseURL+'/finish'
+	if len(URL) > 0:
+		uploaddata = json.loads(timestampjson)
+		reqheaders = {'Content-Type':'application/json'}
+		request = requests.post(url=URL,json=uploaddata,headers=reqheaders)
+		webstatus = str(request.status_code)
 
 	# Append to log ... needs datestamp as file prefix
 	with open("timinglog.log","a") as logfile:
-#			logfile.write(thistrigger+","+beamid+","+request.status_code)
-			logfile.write(thistrigger+","+beamid+",")
+		logfile.write(thistrigger+","+beamid+","+webstatus+"\n")
 
 # Staged interrupt function
 def staged(pin):
@@ -61,17 +88,10 @@ def staged(pin):
 	if time.time() - stagetrigger < 1: # Probably a double-trigger
 		print("too soon!")
 	else: # Seems a valid trigger
-		sendtime("staged",str(time.time()))
+		sendtime("staged",time.time())
 		print("Staged!")
+		#takephoto("stagedpic")
 		
-		# Take a photo of staged car (future)
-		#ret, image = camera.read()
-		#ret, image = camera.read()
-		#if not ret:
-		#	print("No image returned")
-		#cv2.imshow(stagedpic,image)
-		#camera.release
-
 # Start interrupt function
 def started(pin):
 	global starttrigger
@@ -79,16 +99,8 @@ def started(pin):
 		print("too soon!")
 	else: # Seems a valid trigger
 		starttrigger = time.time()
-		sendtime("started",str(starttrigger))
-		print("Start timestamp: " + str(starttrigger))
-		
-		# Take a photo of starting car (future)
-		#ret, image = camera.read()
-		#ret, image = camera.read()
-		#if not ret:
-		#	print("No image returned")
-		#cv2.imshow(startpic,image)
-		#camera.release
+		sendtime("started",starttrigger)
+		#takephoto("startpic")
 		
 		#publish to broker (currently using web API)
 		#client.publish("StartLine", payload=trigger, qos=0, retain=False)
@@ -100,17 +112,10 @@ def splitted(pin):
 		print("too soon!")
 	else: # Seems a valid trigger
 		splittrigger = time.time()
-		sendtime("split",str(splittrigger))
+		sendtime("split",splittrigger)
 		splittime = splittrigger - starttrigger
 		print("Split time: " + str(round(splittime,2)) + "s")
-
-		# Take a photo of car (future)
-		#ret, image = camera.read()
-		#ret, image = camera.read()
-		#if not ret:
-		#	print("No image returned")
-		#cv2.imshow(splitpic,image)
-		#camera.release
+		#takephoto("splitpic")
 
 # Finish interrupt function
 def finished(pin):
@@ -119,7 +124,7 @@ def finished(pin):
 		print("too soon!")
 	else: # Seems a valid trigger
 		finishtrigger = time.time()
-		sendtime("finished",str(finishtrigger))
+		sendtime("finished",finishtrigger)
 
 		# Calculate elapsed time and log timestamp
 		finishtime = finishtrigger - starttrigger
@@ -128,13 +133,7 @@ def finished(pin):
 		print("Finish time: " + str(round(finishtime,2)) + "s")
 		print("Speed: "+str(round(speed,2))+"mph")
 
-		# Take a photo of car (future)
-		#ret, image = camera.read()
-		#if not ret:
-		#	print("No image returned")
-		#cv2.imshow(finishpic,image)
-		#cv2.imwrite("images/"+str(round(time.time(),0))+".jpg",image)
-		#camera.release
+		#takephoto("finishpic")
 
 # Initialise trigger timestamp
 stagetrigger = time.time()
