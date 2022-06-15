@@ -17,7 +17,7 @@ Uses interrupts on several pins to trigger a function for that pin's determined 
 * Saves picture of all finishers to ./images
 
 ### Things still to do...
-* Write the code to push to the API
+* Write the code to push to the API (https://github.com/mabware/timing-reconciliation-api)
 * Test it
 * Tidy everything!
 
@@ -27,3 +27,9 @@ Copies the python code to a folder and appends the command line to rc.local.
 ### Bugs
 * Doesn't check if it's already in rc.local
 * Not checked it even works!
+
+## FDS.py
+Functions for connecting to the FDS Timing hardware and returning the time stamp and input when triggered.
+
+## GPIO.py
+Functions for reading times directly from GPIO pins.
