@@ -1,17 +1,23 @@
 #python3
 
-from FDS.py import DecodeRaw,ReadFDS # (FDS function)
+from FDS import DecodeRaw,ReadFDS # FDS functions
+from API import sendtime # Connects to Mabware API
 import time # for sleeping (testing only, I guess)
-import json # for json.  Obvs
-import requests # for posting data to API
+import configparser
+
+# import config.ini
+config = configparser.ConfigParser()
+config.sections()
+config.read('config.ini')
 
 # Set base URL for API
-baseURL = 'http://path.to/API'
+baseURL = config['SERVER']['ResultsAPI']
 
 def SetPinMap():
 	return "Not Yet Written"
 
 print("Ready for signal")
+driver = 0
 
 # Loop forever
 while True:
@@ -20,16 +26,17 @@ while True:
 
 	# Test each trigger in turn
 	time.sleep(2)
+	driver=driver+1
 	print("pretending to stage")
-	staged(0)
+	sendtime("stage",str(driver),baseURL)
 	time.sleep(2)
 	print("pretending to start")
-	started(0)
+	sendtime("start",str(time.time()),baseURL)
 	time.sleep(2)
-	print("pretending to split")
-	splitted(0)
-	time.sleep(2)
+#	print("pretending to split")
+#	sendtime("split")
+#	time.sleep(2)
 	print("pretending to finish")
-	finished(0)
+	sendtime("finish",str(time.time()),baseURL)
 	time.sleep(2)
 	
