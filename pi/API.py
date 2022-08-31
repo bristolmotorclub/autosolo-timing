@@ -1,9 +1,18 @@
+import json # for json.  Obvs
+import requests # for posting data to API
+
 # Function: sendtime
 # Inputs:
 #   beamid(string)
-#       Name of beam to update
+#       Name of beam to update:
+#			stage
+#			start
+#			finish
+#			cancelFinish
+#			reset
 #   thistrigger(string)
-#       Timestamp of beam
+#       Timestamp for start/finish
+#		Driver number to stage
 #   baseURL(string)
 #       URL of API
 # Outputs:
@@ -17,17 +26,22 @@ def sendtime(beamid,thistrigger,baseURL):
 
 	# Code to send stuff
 	URL=""
-	if beamid == "started":
+	if beamid == "stage":
+		timestampjson = '{"id":'+thistrigger+'}'
+		URL = baseURL+'stage'
+	if beamid == "start":
 		timestampjson = '{"startTime":'+thistrigger+'}'
-		URL = baseURL+'/start'
-	if beamid == "finished":
+		URL = baseURL+'start'
+	if beamid == "finish":
 		timestampjson = '{"finishTime":'+thistrigger+'}'
-		URL = baseURL+'/finish'
+		URL = baseURL+'finish'
 	if len(URL) > 0:
+		print(URL)
 		uploaddata = json.loads(timestampjson)
 		reqheaders = {'Content-Type':'application/json'}
 		request = requests.post(url=URL,json=uploaddata,headers=reqheaders)
 		webstatus = str(request.status_code)
+		print(request)
 
 	# Append to log ... needs datestamp as file prefix
 	with open("timinglog.log","a") as logfile:
