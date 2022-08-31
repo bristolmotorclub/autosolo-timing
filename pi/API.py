@@ -1,10 +1,21 @@
-# Function to send data to web service
-def sendtime(beamid,thistrigger):
+# Function: sendtime
+# Inputs:
+#   beamid(string)
+#       Name of beam to update
+#   thistrigger(string)
+#       Timestamp of beam
+#   baseURL(string)
+#       URL of API
+# Outputs:
+#   TriggeredInput(string)
+#       Name of input that was triggered
+#   TriggeredTime(int)
+#       Time since midnight that the input was triggered
+def sendtime(beamid,thistrigger,baseURL):
 	webstatus = "69"
 	print("API send function: recording "+beamid+" at "+thistrigger)
 
 	# Code to send stuff
-    baseURL=""
 	URL=""
 	if beamid == "started":
 		timestampjson = '{"startTime":'+thistrigger+'}'
@@ -21,3 +32,6 @@ def sendtime(beamid,thistrigger):
 	# Append to log ... needs datestamp as file prefix
 	with open("timinglog.log","a") as logfile:
 		logfile.write(thistrigger+","+beamid+","+webstatus+"\n")
+		logfile.close
+	
+	return webstatus
