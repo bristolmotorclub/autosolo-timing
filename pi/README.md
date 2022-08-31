@@ -3,13 +3,13 @@ livetiming.py uses interrupts to trigger start/finish timing and upload timestam
 
 build.sh installs the script to run at boot
 
-## livetiming.py
-Uses interrupts on several pins to trigger a function for that pin's determined location.  Four pins are defined at the start of the script for the following timing beams:
+## config.ini
+Used for managing configuration of the current event
 
-* Staged (ready to start)
-* Start
-* Split
-* Finish
+### [SERVER]
+ResultsAPI = https://server.example.com/
+
+## livetiming.py
 
 ### Current features
 * Records timestamp to a log file
@@ -33,3 +33,10 @@ Functions for connecting to the FDS Timing hardware and returning the time stamp
 
 ## GPIO.py
 Functions for reading times directly from GPIO pins.
+
+Uses interrupts on several pins to trigger a function for that pin's determined location.  Four pins are defined at the start of the script for the following timing beams:
+
+* Staged (ready to start)
+* Start
+* Split
+* Finish

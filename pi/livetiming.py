@@ -12,9 +12,28 @@ config.read('config.ini')
 
 # Set base URL for API
 baseURL = config['SERVER']['ResultsAPI']
+# Configure stagiing
+StageMethod = config['STAGE']['StageMethod']
+if 'GreenLightPin' in config:
+	GreenLightPin = config['STAGE']['GreenLightPin']
+	GreenLightMethod = config['STAGE']['GreenLightMethod']
 
 def SetPinMap():
 	return "Not Yet Written"
+	
+def StageCar():
+	global driver
+	if StageMethod == "Local":
+		# Read in car number
+		driver = driver
+	elif StageMethod == "Remote":
+		# Wait for car to be staged online
+		driver = driver
+	else:
+		return 69
+	sendtime("stage",str(driver),baseURL)
+	return driver
+	
 
 print("Ready for signal")
 driver = 0
@@ -28,7 +47,7 @@ while True:
 	time.sleep(2)
 	driver=driver+1
 	print("pretending to stage")
-	sendtime("stage",str(driver),baseURL)
+	StageCar()
 	time.sleep(2)
 	print("pretending to start")
 	sendtime("start",str(time.time()),baseURL)
