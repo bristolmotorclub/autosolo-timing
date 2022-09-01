@@ -1,7 +1,7 @@
 #python3
 
 from FDS import DecodeRaw,ReadFDS # FDS functions
-from API import sendtime # Connects to Mabware API
+from API import sendtime,GetStaged # Connects to Mabware API
 import time # for sleeping (testing only, I guess)
 import configparser
 
@@ -31,15 +31,22 @@ def SetPinMap():
 def StageCar():
 	global driver
 	if StageMethod == "Local":
-		# Read in car number
+		# Read in car number from command line
 		driver = input("Enter driver number:")
+		sendtime("stage",str(driver),baseURL)
 	elif StageMethod == "Remote":
-		# Wait for car to be staged online
-		driver = driver
+		# Get the list of staged cars from server
+		staged=GetStaged(baseURL)
+		while len(staged) == 2: # wait until there's more than just the two brackets returned
+			print("Waiting for car: ")
+			time.sleep(1)
+			staged=GetStaged(baseURL)
+		if '[]' not in staged: # Get the first driver number
+			driver = int(staged.split('[')[1].split(',')[0].split(']')[0].split('"')[1])
+			print(driver)
 	else:
 		return 69
-	sendtime("stage",str(driver),baseURL)
-	return driver
+	return driver # return the driver number of the first staged car
 	
 
 print("Ready for signal")
