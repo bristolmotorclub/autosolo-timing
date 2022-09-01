@@ -49,3 +49,10 @@ def sendtime(beamid,thistrigger,baseURL):
 		logfile.close
 	
 	return webstatus
+
+def GetStaged(baseURL):
+	URL = baseURL+'stage'
+	reqheaders = {'Content-Type':'application/json'}
+	request = requests.get(URL)
+	webstatus = str(request.status_code)
+	return request.text
