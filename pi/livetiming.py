@@ -12,11 +12,18 @@ config.read('config.ini')
 
 # Set base URL for API
 baseURL = config['SERVER']['ResultsAPI']
-# Configure stagiing
+# Configure staging
 StageMethod = config['STAGE']['StageMethod']
 if 'GreenLightPin' in config:
 	GreenLightPin = config['STAGE']['GreenLightPin']
 	GreenLightMethod = config['STAGE']['GreenLightMethod']
+
+def ReadTest():
+	time.sleep(2)
+	TriggeredInput="1"
+	TriggeredTime=str(time.time())
+	print(TriggeredInput,TriggeredTime)
+	return (TriggeredInput,TriggeredTime)
 
 def SetPinMap():
 	return "Not Yet Written"
@@ -25,7 +32,7 @@ def StageCar():
 	global driver
 	if StageMethod == "Local":
 		# Read in car number
-		driver = driver
+		driver = input("Enter driver number:")
 	elif StageMethod == "Remote":
 		# Wait for car to be staged online
 		driver = driver
@@ -44,18 +51,16 @@ while True:
 	#time.sleep(1e6)
 
 	# Test each trigger in turn
-	time.sleep(2)
 	driver=driver+1
-	print("pretending to stage")
+	print("Staging car")
 	StageCar()
-	time.sleep(2)
-	print("pretending to start")
-	sendtime("start",str(time.time()),baseURL)
-	time.sleep(2)
-#	print("pretending to split")
-#	sendtime("split")
-#	time.sleep(2)
-	print("pretending to finish")
-	sendtime("finish",str(time.time()),baseURL)
-	time.sleep(2)
+	if config['BEAMS']['StartType'] == "Test":
+		Start=ReadTest()
+		sendtime("start",Start[1],baseURL)
+	if config['BEAMS']['FinishType'] == "Test":
+		Finish=ReadTest()
+		sendtime("finish",Finish[1],baseURL)
+	if 'FDS' in config:
+		print("Reading FDS")
+		#Start=ReadFDS()
 	

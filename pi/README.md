@@ -4,10 +4,7 @@ livetiming.py uses interrupts to trigger start/finish timing and upload timestam
 build.sh installs the script to run at boot
 
 ## config.ini
-Used for managing configuration of the current event
-
-### [SERVER]
-ResultsAPI = https://server.example.com/
+Used for managing configuration of the current event.  Comments describe each function in the file.
 
 ## livetiming.py
 
@@ -17,7 +14,6 @@ ResultsAPI = https://server.example.com/
 * Saves picture of all finishers to ./images
 
 ### Things still to do...
-* Write the code to push to the API (https://github.com/mabware/timing-reconciliation-api)
 * Test it
 * Tidy everything!
 
@@ -27,6 +23,7 @@ Copies the python code to a folder and appends the command line to rc.local.
 ### Bugs
 * Doesn't check if it's already in rc.local
 * Not checked it even works!
+* So much has changed since I wrote it that it probably doesn't work
 
 ## FDS.py
 Functions for connecting to the FDS Timing hardware and returning the time stamp and input when triggered.
