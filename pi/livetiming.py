@@ -1,35 +1,27 @@
 #python3
 
-from FDS.py import DecodeRaw,ReadFDS # (FDS function)
+from API import sendtime # Library for connecting to the API
+from FDS import DecodeRaw,ReadFDS # (FDS function)
+import configparser # Library for importing config (https://docs.python.org/3/library/configparser.html)
 import time # for sleeping (testing only, I guess)
-import json # for json.  Obvs
-import requests # for posting data to API
 
-# Set base URL for API
-baseURL = 'http://path.to/API'
+print("Importing config")
+config=configparser.ConfigParser()
+config.read('.\config.ini')
 
 def SetPinMap():
 	return "Not Yet Written"
 
-print("Ready for signal")
+print(config['Start']['type'])
+print(config['Start']['port'])
 
 # Loop forever
 while True:
-	#Loop forever waiting for interrupt
-	#time.sleep(1e6)
-
-	# Test each trigger in turn
-	time.sleep(2)
-	print("pretending to stage")
-	staged(0)
-	time.sleep(2)
-	print("pretending to start")
-	started(0)
-	time.sleep(2)
-	print("pretending to split")
-	splitted(0)
-	time.sleep(2)
-	print("pretending to finish")
-	finished(0)
-	time.sleep(2)
-	
+	# Read all inputs
+	FDSread = ReadFDS(config['Start']['port'])
+	if FDSread[0] == config['Start']['input']:
+		print("start detected at "+str(FDSread[1]))
+		sendtime("start",str(FDSread[1]),config['Server']['serverURL'])
+	elif FDSread[0] == config['Finish']['input']:
+		print("finish detected at "+str(FDSread[1]))
+		sendtime("finish",str(FDSread[1]),config['Server']['serverURL'])

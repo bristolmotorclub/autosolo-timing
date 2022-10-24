@@ -1,15 +1,17 @@
+import json # for json.  Obvs
+import requests # for posting data to API
+
 # Function to send data to web service
-def sendtime(beamid,thistrigger):
+def sendtime(beamid,thistrigger,baseURL):
 	webstatus = "69"
 	print("API send function: recording "+beamid+" at "+thistrigger)
 
 	# Code to send stuff
-    baseURL=""
 	URL=""
-	if beamid == "started":
+	if beamid == "start":
 		timestampjson = '{"startTime":'+thistrigger+'}'
 		URL = baseURL+'/start'
-	if beamid == "finished":
+	if beamid == "finish":
 		timestampjson = '{"finishTime":'+thistrigger+'}'
 		URL = baseURL+'/finish'
 	if len(URL) > 0:

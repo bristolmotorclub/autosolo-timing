@@ -1,5 +1,5 @@
 # autosolo-timing
-A timing display system for AutoSolo events to show the current class and overall standings on static Raspbarry Pi screens and mobile web browsers.  The intention is to use a Raspberry Pi as a WiFi access point, web server and MySQL database.  Times will be stored in the database, edited directly with LibreOffice.  The web server will present the current times in a tablular format, ordered by class or overall and either to fit a screen resolution directly with no scrolling or for a mobile device.
+A timing display system for AutoSolo events to show the current class and overall standings on static Raspbarry Pi screens and mobile web browsers.
 
 Main app is at https://github.com/mabware
 
@@ -9,6 +9,7 @@ Some thinking for the future...
 * Graphs showing class progression
 * Upload to a cloud service when data is available for live(ish) online timing
 * Integration with a mobile app for adding times directly from the finish line
+* Images from a camera overlaid with times for social media uploads
 
 ## Getting Started
 
@@ -16,11 +17,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-You'll need a Raspberry Pi to install the software on and at least one screen to display the results on!
+* You'll need a device (Windows/Linux) and at least one screen to display the results on!
+* Python 3
 
 ### Installing
 
-TBD...
+No installation yet.  Run the server at the link above and run the trackside software at ./pi/livetiming.py
 
 ## Running the tests
 
@@ -49,7 +51,7 @@ Add additional notes about how to deploy this on a live system
 ## Built With
 
 * [TBC](http://.../) - The web framework used
-* [MySQL](https://.../) - Database
+* [python] - The trackside code
 
 ## Contributing
 
