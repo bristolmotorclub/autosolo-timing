@@ -28,6 +28,14 @@ Copies the python code to a folder and appends the command line to rc.local.
 ## FDS.py
 Functions for connecting to the FDS Timing hardware and returning the time stamp and input when triggered.
 
+Inputs:
+* M1 (button 1)
+* M2 (button 2)
+* 1 (3.5mm socket 1)
+* 2 (3.5mm socket 2)
+* 3 (wireless 1)
+* 4 (wireless 2)
+
 ## GPIO.py
 Functions for reading times directly from GPIO pins.
 

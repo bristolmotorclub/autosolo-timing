@@ -58,7 +58,7 @@ while True:
 	#time.sleep(1e6)
 
 	# Test each trigger in turn
-	driver=driver+1
+	#driver=driver+1 # auto-increment driver number
 	print("Staging car")
 	StageCar()
 	if config['BEAMS']['StartType'] == "Test":
@@ -69,5 +69,10 @@ while True:
 		sendtime("finish",Finish[1],baseURL)
 	if 'FDS' in config:
 		print("Reading FDS")
-		#Start=ReadFDS()
-	
+		FDSresult=ReadFDS(config['FDS']['SerialPort'])
+		if config['BEAMS']['StartType'] == "FDS":
+			if config['BEAMS']['StartID'][1] in FDSresult[0]:
+				sendtime("start",FDSresult[1],baseURL)
+		if config['BEAMS']['FinishType'] == "FDS":
+			if config['BEAMS']['FinishID'][1] in FDSresult[0]:
+				sendtime("finish",FDSresult[1],baseURL)
