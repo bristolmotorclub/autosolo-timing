@@ -22,18 +22,18 @@ import requests # for posting data to API
 #       Time since midnight that the input was triggered
 def sendtime(beamid,thistrigger,baseURL):
 	webstatus = "69"
-	print("API send function: recording "+beamid+" at "+thistrigger)
+	print("API send function: recording "+str(beamid)+" at "+str(thistrigger))
 
 	# Code to send stuff
 	URL=""
 	if beamid == "stage":
-		timestampjson = '{"id":'+thistrigger+'}'
+		timestampjson = '{"id":'+str(thistrigger)+'}'
 		URL = baseURL+'stage'
 	if beamid == "start":
-		timestampjson = '{"startTime":'+thistrigger+'}'
+		timestampjson = '{"startTime":'+str(thistrigger)+'}'
 		URL = baseURL+'start'
 	if beamid == "finish":
-		timestampjson = '{"finishTime":'+thistrigger+'}'
+		timestampjson = '{"finishTime":'+str(thistrigger)+'}'
 		URL = baseURL+'finish'
 	if len(URL) > 0:
 		print(URL)
@@ -45,7 +45,7 @@ def sendtime(beamid,thistrigger,baseURL):
 
 	# Append to log ... needs datestamp as file prefix
 	with open("timinglog.log","a") as logfile:
-		logfile.write(thistrigger+","+beamid+","+webstatus+"\n")
+		logfile.write(str(thistrigger)+","+beamid+","+webstatus+"\n")
 		logfile.close
 	
 	return webstatus
