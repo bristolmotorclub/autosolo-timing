@@ -59,8 +59,8 @@ while True:
 
 	# Test each trigger in turn
 	#driver=driver+1 # auto-increment driver number
-	print("Staging car")
-	StageCar()
+	#print("Staging car")
+	#StageCar()
 	if config['BEAMS']['StartType'] == "Test":
 		Start=ReadTest()
 		sendtime("start",Start[1],baseURL)
@@ -71,8 +71,16 @@ while True:
 		print("Reading FDS")
 		FDSresult=ReadFDS(config['FDS']['SerialPort'])
 		if config['BEAMS']['StartType'] == "FDS":
-			if config['BEAMS']['StartID'][1] in FDSresult[0]:
+			if config['BEAMS']['StartID'] == FDSresult[0]:
 				sendtime("start",FDSresult[1],baseURL)
 		if config['BEAMS']['FinishType'] == "FDS":
-			if config['BEAMS']['FinishID'][1] in FDSresult[0]:
+			if config['BEAMS']['FinishID'] == FDSresult[0]:
 				sendtime("finish",FDSresult[1],baseURL)
+		if config['BEAMS']['Split1'] == "FDS":
+			if config['BEAMS']['Split1ID'] == FDSresult[0]:
+				print("Split 1 - not recorded")
+				#sendtime("split1",FDSresult[1],baseURL)
+		if config['BEAMS']['Split2'] == "FDS":
+			if config['BEAMS']['Split2ID'] == FDSresult[0]:
+				print("Split 2 - not recorded")
+				#sendtime("split2",FDSresult[1],baseURL)
