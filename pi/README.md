@@ -1,12 +1,27 @@
 # Overview
 livetiming.py uses interrupts to trigger start/finish timing and upload timestamps to server
 
-build.sh installs the script to run at boot
+## Running the app
+1. Edit the config.ini to reflect your setup.
+1. Connect the green light switch to the configured pin.  Use a momentary switch so the controller can halt the start by releasing the switch.
+ ![LED circuit diagram](LEDcircuit.png)
+1. Run livetiming.py.
+1. Import some drivers to the web service.
+1. Stage some cars through the web interface.
 
 ## config.ini
 Used for managing configuration of the current event.  Comments describe each function in the file.
 
 ## livetiming.py
+Main piece of code - run this to read in the config file, read inputs and send data to the server.
+
+### Current features
+* Records timestamp to a log file
+* Only starts cars when green light is on (or not configured)
+* Pushes timestamps to web service
+
+## livetiming2.py
+Old version of the code that uses GPIO triggers.
 
 ### Current features
 * Records timestamp to a log file
@@ -28,7 +43,7 @@ Copies the python code to a folder and appends the command line to rc.local.
 ## FDS.py
 Functions for connecting to the FDS Timing hardware and returning the time stamp and input when triggered.
 
-Inputs:
+Inputs return as:
 * M1 (button 1)
 * M2 (button 2)
 * 1 (3.5mm socket 1)
